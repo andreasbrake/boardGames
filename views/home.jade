@@ -1,0 +1,31 @@
+html(lang='en')
+	head
+		meta(charset='utf-8')
+		meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
+		title Bored Games
+		link(rel='stylesheet' href='css/home.css')
+		link(rel='stylesheet' href='css/style.css')
+			
+	body
+		.header
+			- if(user != 'null')
+				h= "logged in as " + user
+				a.nav-button(role='button' href='/profile') profile
+				a.nav-button(role='button' href='/logout') logout
+			- else
+				a.nav-button(role='button' href='/login') login
+				a.nav-button(role='button' href='/signup') signup
+		.main
+			h1 Welcome to Bored Gamess
+			h2 Fresh Start!
+
+			.games
+				.gane-panel
+					a(href='/chess') Chess
+		.footer
+			br
+			p
+				| (Chat about us  
+				a(href='http://buyandsell-tentacularapps.rhcloud.com/'  target="_blank") here
+				| )
+			p
