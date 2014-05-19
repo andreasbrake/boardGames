@@ -1,0 +1,16 @@
+html(lang='en')
+	head
+		title signup
+		
+		link(rel='stylesheet' href='css/style.css')
+		link(rel='stylesheet' href='css/inputPage.css')
+	body
+		.header
+			a(role='button' href="/") Home
+		.main
+			.panel
+				h1 Create an account!
+				form.login(name="signup", action="/signup", method="post")
+					input.topTxt(type="text", name="username")
+					input.middleTxt(type="password", name="password")
+					input.bottomBtn(type="submit" role='button' value="signup")

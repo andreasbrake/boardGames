@@ -1,0 +1,16 @@
+html(lang='en')
+	head
+		title login
+		meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
+		link(rel='stylesheet' href='css/style.css')
+		link(rel='stylesheet' href='css/inputPage.css')
+	body
+		.header
+			a(role='button' href="/") Home
+		.main
+			.panel
+				h1 Login
+				form.login(name="login", action="/login", method="post")
+					input.topTxt(type="text", name="username")
+					input.middleTxt(type="password", name="password")
+					input.bottomBtn(type="submit" role='button' value="login")

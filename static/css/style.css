@@ -12,11 +12,9 @@
 }
 .main{
 	position: absolute;
-	top: 75px;
+	top: 100px;
 	left: 0px;
 	right: 0px;
-	background-color: white;
-	z-index: 0;
 }
 .footer{
 	position: absolute;
