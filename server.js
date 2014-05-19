@@ -40,6 +40,11 @@ site.get('/login',function(req,res){
 site.post('/login', passport.authenticate('local', 
 	{successRedirect: '/',
 	failureRedirect: '/login'}))
+// ====== LOGOUT ======
+site.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+})
 // ====== SIGNUP ======
 site.get('/signup',function(req,res){
 	res.render('signup.jade')

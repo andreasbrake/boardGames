@@ -4,12 +4,24 @@ home(lang='en')
 		meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1')
 		link(rel='stylesheet' href='css/style.css')
 		link(rel='stylesheet' href='css/homePage.css')
+
+		script(type='text/javascript').
+			function challenge(){
+				document.getElementById("challengeForm").action="/getGame/versus" + document.getElementById("opponent").value
+			}
 	body
 		.header
 			a.nav-button(href='/') home
 			a.nav-button(href='/logout') logout
 		.main
 			a.nav-button(href='/getGame/newGame') New Game
+			br
+			br
 			- for(var i=0; i<games; i++){
 				a.nav-button(href='/getGame/game' + i)= ("get game " + i)
 			- }
+			br
+			br
+			form(id="challengeForm" action="/getGame/" method='get')
+				input(id="opponent" type='text' value="")
+				input(type='submit' value='Challenge' onclick='challenge()')

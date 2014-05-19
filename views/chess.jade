@@ -52,8 +52,15 @@ html(lang='en')
 						$('#submitButton').css('marginLeft','-1000')
 				})
 				function select1(tile){
+					console.log($('#hasTurn').attr('value'))
+					console.log($('#playerColour').attr('value'))
+
 					if($('#' + tile).html() == "")
-							return
+						return
+					if($('#hasTurn').attr('value') == 'false')
+						return
+					if($('#' + tile + 'colour').html() != $('#playerColour').attr('value'))
+						return
 
 					setBackgrounds()
 
@@ -120,9 +127,15 @@ html(lang='en')
 			a.nav-button(href='/logout') logout
 		.main
 			h1 Chess!
-
+			- if(hasTurn == 'true')
+				h2= "It is your turn"
+			- else
+				h2= "It is " + opponent + "'s turn"
 			- var columns = ['a','b','c','d','e','f','g','h']
 			- var rows = ['1','2','3','4','5','6','7','8']
+
+			input.hidden#playerColour(type='text' value= playerColour disabled)
+			input.hidden#hasTurn(type='text' value= hasTurn disabled)
 
 			form#moveForm(method='post')
 				input#moveData(type='text' name='movement' value='hi')
@@ -145,9 +158,9 @@ html(lang='en')
 									- if(p.location == cellname)
 										- var name = p.name + ""
 										if(p.colour == 0)
-											h.red(id=cellname+'name')= p.name
+											h.first(id=cellname+'name')= p.name
 										else
-											h.blue(id=cellname+'name')= p.name
+											h.second(id=cellname+'name')= p.name
 										h.hidden(id=cellname+'colour')= p.colour
 							
 							

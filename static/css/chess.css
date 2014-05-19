@@ -30,10 +30,10 @@ table{
 	border-bottom: 1px solid;
 	border-bottom-color: white;
 }
-.red{
+.first{
 	color: red;
 }
-.blue{
+.second{
 	color: blue;
 }
 .hidden{

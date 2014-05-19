@@ -5,14 +5,32 @@ var pieces = []
 
 exports.get = function(req,res){
 	var gameIndex = game.loadGame()
-	var user = req.user.username
-	client.get('user:'+user,function(err,savedUser){
-		if(err) console.log('error loading game')
-		var savedGames = JSON.parse(savedUser).games.chess
-		
-		pieces = savedGames[gameIndex]
+	var gameId = req.user.games.chess[gameIndex]
 
-		return res.render('chess.jade',{pieces:pieces})
+	client.get('game:'+gameId,function(err,gameString){
+		if(err) console.log('error loading game')
+
+		var game = JSON.parse(gameString)
+		pieces = game.data
+
+		var playerColour = 1
+		var opponent = game.first
+		var hasTurn = 'false'
+
+		if(req.user.username == game.first){
+			playerColour = 0
+			opponent = game.second
+		}
+		if(playerColour == game.turn)
+			hasTurn = 'true'
+
+		return res.render('chess.jade',{
+			pieces:pieces,
+			playerColour:playerColour,
+			hasTurn:hasTurn,
+			user:req.user.username,
+			opponent:opponent
+		})
 	})
 }
 exports.post = function(req, res){
@@ -40,6 +58,5 @@ exports.post = function(req, res){
 	if(movingPiece != null)
 		pieces.push(movingPiece)
 
-	game.saveGame(req.user.username, pieces)
-	return res.redirect('/chess')
+	return game.saveGame(res, req.user, pieces)
 }

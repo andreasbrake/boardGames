@@ -1,41 +1,104 @@
-var gameIndex = -1
+var bcrypt = require('bcrypt')
 var client = require('../redisdb').client
+var gameIndex = -1
 
 exports.getList = function(req, res){
-	var user = req.user
-	client.get('user:'+user.username,function(err,userData){
-		return res.render('getGame.jade',{games:JSON.parse(userData).games.chess.length})	
-	})	
+	return res.render('getGame.jade',{games:req.user.games.chess.length})
 }
 exports.selectGame = function(req, res){
-	var user = req.user.username
-	if(req.params.game == 'newGame'){
-		client.get('user:'+user,function(err,userData){
+	var gameType = req.params.game
+	var user = req.user
 
-			userJSON = JSON.parse(userData)
-			gameIndex = userJSON.games.chess.length
-			userJSON.games.chess.push(generateFreshMap())
+	if(gameType == 'newGame'){
+		bcrypt.genSalt(function(err,salt){
+			gameIndex = user.games.chess.length
+			user.games.chess.push(salt)
+			var newGame = generateFreshMap()
+			var gameData = {
+				first:user.username,
+				second:user.username,
+				turn:0,
+				turnNumber:0,
+				data:newGame
+			}
+			client.multi()
+				.set('user:'+user.username,JSON.stringify(user))
+				.set('game:'+salt,JSON.stringify(gameData))
+				.exec(function(err,rep){
+					if (err) return console.error(err)
+					return res.redirect('/chess')
+				})
+		})
+	}
+	else if(gameType.substring(0,4) == 'game'){
+		gameIndex = gameType.substring(4)
+		return res.redirect('/chess')
+	}
+	else if(gameType.substring(0,6) == 'versus'){
+		gameIndex = user.games.chess.length
 
-			client.set('user:'+user,JSON.stringify(userJSON),function(err,rep){
-				if(err) console.log('error saving game')
-				return res.redirect('/chess')
+		var playerTwo = gameType.substring(6)
+		player2exists(user,playerTwo)
+	}
+	function player2exists(user,playerTwo){
+		client.exists('user:'+playerTwo,function(err,ex){
+			if(err) console.log(err)
+			if(ex)
+				return setData(user,playerTwo)
+			else
+				return console.log('error')
+		})
+	}
+	function setData(user,playerTwo){
+		bcrypt.genSalt(function(err,salt){
+			var newGame = generateFreshMap()
+			var gameData = {
+				first: ("" + user.username),
+				second: ("" +playerTwo),
+				turn:0,
+				turnNumber:0,
+				data:newGame
+			}
+
+			client.get('user:' + playerTwo, function(err, playerString){
+				user.games.chess.push(salt)
+				var player = JSON.parse(playerString)
+				player.games.chess.push(salt)
+				client.multi()
+					.set('user:'+user.username,JSON.stringify(user))
+					.set('user:'+player.username,JSON.stringify(player))
+					.set('game:'+salt,JSON.stringify(gameData))
+					.exec(function(err,rep){
+						if (err) return console.error(err)
+						return res.redirect('/chess')
+					})
 			})
 		})
 	}
-	else{
-		gameIndex = req.params.game.split('game')[1]
-		return res.redirect('/chess')
-	}	
 
 }
-exports.saveGame = function(user, game){
-	client.get('user:'+user, function(err, userData){
+exports.saveGame = function(res, user, game){
+	var gameId = user.games.chess[gameIndex]
+	client.get('game:'+gameId,function(err, oldDataString){
+		var oldData = JSON.parse(oldDataString)
 
-		var userJSON = JSON.parse(userData)
-		userJSON.games.chess[gameIndex] = game
+		if(oldData.turn == 0)
+			var newTurn = 1
+		else
+			var newTurn = 0
 
-		client.set('user:'+user,JSON.stringify(userJSON),function(err,rep){
+		var gameData = {
+			first:oldData.first,
+			second: oldData.second,
+			turn: newTurn,
+			turnNumber: (oldData.turnNumber + 1),
+			data:game
+		}
+
+
+		client.set('game:'+gameId,JSON.stringify(gameData),function(err,rep){
 			if(err) console.log('error saving game')
+			return res.redirect('/chess')
 		})
 	})
 }
