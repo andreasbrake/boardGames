@@ -41,7 +41,7 @@ site.post('/login', passport.authenticate('local',
 	{successRedirect: '/',
 	failureRedirect: '/login'}))
 // ====== LOGOUT ======
-site.get('/logout', function(req, res){
+site.get('/logout', auth, function(req, res){
   req.logout();
   res.redirect('/');
 })
@@ -54,14 +54,14 @@ site.post('/signup', createUser.create)
 
 
 
-site.get('/profile',function(req, res){
+site.get('/profile',auth,function(req, res){
 	return res.render('profile.jade')
 })
-site.get('/chess',chess.get)
-site.post('/chess',chess.post)
+site.get('/chess',auth,chess.get)
+site.post('/chess',auth,chess.post)
 
-site.get('/getGame',game.getList)
-site.get('/getGame/:game',game.selectGame)
+site.get('/getGame',auth,game.getList)
+site.get('/getGame/:game',auth,game.selectGame)
 
 passport.use(new LocalStrategy(
 		function(username, password, done){
@@ -89,6 +89,10 @@ passport.deserializeUser(function(name, done) {
 		done(null, JSON.parse(user))
 	});
 });
+function auth(req, res, next){
+	if(req.user) next()
+	else res.redirect('/login')
+}
 
 /* Run on port 3000 */
 site.listen(port, ip_addr);
