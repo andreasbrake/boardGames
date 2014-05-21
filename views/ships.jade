@@ -1,0 +1,67 @@
+html(lang='en')
+	head
+		meta(charset='utf-8')
+		meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
+		title Chess: Bored Games
+		link(rel='stylesheet' href='css/ships.css')
+		link(rel='stylesheet' href='css/style.css')
+
+		script(type='text/javascript' src="/js/jquery.js")
+		script(type='text/javascript' src="/js/shipPieceSelection.js")
+
+	body
+		.header
+			a.nav-button(href='/') home
+			a.nav-button(href='/logout') logout
+		.main
+			h1 Battling Ships!
+			- if(hasTurn == 'true')
+				h2= "It is your turn"
+			- else
+				h2= "It is " + opponent + "'s turn"
+			- var columns = ['a','b','c','d','e','f','g','h','i','j']
+			- var rows =    ['1','2','3','4','5','6','7','8','9','10']
+
+			input.hidden#playerColour(type='text' value= playerColour disabled)
+			input.hidden#shotData(form='shootForm' type='text' name='shot' value='hi')
+
+			form#shootForm(method='post')
+				input.nav-button#submitButton(form='shootForm' type='submit' value='Submit Move')
+
+			table.left(id='piecesField')
+				tr.topRow
+					td
+					- for(var j=0; j<columns.length; j++)
+						td
+							h= columns[j]
+				- for(var i=0; i<rows.length; i++)
+					tr
+						td.sideColumn
+							h= rows[i]
+						- for(var j=0; j<columns.length; j++)
+							- var cellname = columns[j] + rows[i]
+							td.tile(id = cellname + 'pieces')
+								- for(var k=0; k<pieces.length; k++)
+									- if(pieces[k].location.indexOf(cellname) > -1)
+										h(class=pieces[k].name)= pieces[k].name.substring(0,3)
+			table.right(id='shotsField')
+				tr.topRow
+					td
+					- for(var j=0; j<columns.length; j++)
+						td
+							h= columns[j]
+				- for(var i=0; i<rows.length; i++)
+					tr
+						td.sideColumn
+							h= rows[i]
+						- for(var j=0; j<columns.length; j++)
+							- var cellname = columns[j] + rows[i]
+							td.tile(id = cellname + 'shots')
+								- for(var k=0; k<shots.length; k++)
+									- if(shots[k].location.indexOf(cellname) > -1)
+										- if(shots[k].hit == 1)
+											h HIT
+										- else
+											h Miss
+							
+							

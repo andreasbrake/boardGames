@@ -1,0 +1,77 @@
+table{
+	border-right: 1px solid;
+	border-bottom: 1px solid;
+	border-collapse: collapse;
+
+	margin-right: auto;
+	margin-left: auto;
+}
+.tile{
+	width: 50px;
+	height: 50px;
+	text-align: center;
+
+	border: 1px solid;
+	border-color: black;
+}
+#shotsField{
+	background-color: grey;
+}
+.left{
+	position: absolute;
+	left: 100;
+}
+.right{
+	position: absolute;
+	right: 100;
+}
+.topRow{
+	height: 25px;
+	text-align: center;
+	border-bottom: 1px solid;
+
+	border-right: 1px solid;
+	border-right-color: white;
+
+	background-color: white;
+}
+.sideColumn{
+	text-align: center;
+	width: 25px;
+	border-right: 1px solid;
+
+	border-top: 1px solid;
+	border-top-color: white;
+	border-bottom: 1px solid;
+	border-bottom-color: white;
+
+	background-color: white;
+}
+.hidden{
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;
+}
+.carrier{
+	color: red;
+}
+.battleship{
+	color: green;
+}
+.submarine{
+	color: blue;
+}
+.patroller{
+	color: purple;
+}
+input{
+	margin-left: -1000px;
+
+	/* Hover transition */
+	-webkit-transition: 0.4s;
+	   -moz-transition: 0.4s;
+	    -ms-transition: 0.4s;
+	     -o-transition: 0.4s;
+	        transition: 0.4s;
+}

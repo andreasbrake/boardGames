@@ -12,12 +12,16 @@ h1,h2{
 
 	background-color: rgb(220,220,220);
 	text-align: right;
+
+	z-index: 1;
 }
 .main{
 	position: absolute;
 	top: 80px;
 	left: 0px;
 	right: 0px;
+
+	z-index: 0;
 }
 .footer{
 	position: absolute;

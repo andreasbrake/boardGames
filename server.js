@@ -11,6 +11,7 @@ var LocalStrategy = require('passport-local').Strategy
 var client = require('./redisdb').client
 
 var chess = require('./routes/chess.js')
+var ships = require('./routes/ships.js')
 var game = require('./routes/getGame.js')
 var createUser = require('./routes/createUser.js')
 
@@ -59,6 +60,9 @@ site.get('/profile',auth,function(req, res){
 })
 site.get('/chess',auth,chess.get)
 site.post('/chess',auth,chess.post)
+
+site.get('/ships',auth,ships.get)
+site.post('/ships',auth,ships.post)
 
 site.get('/getGame',auth,game.getList)
 site.get('/getGame/:game',auth,game.selectGame)

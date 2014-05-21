@@ -17,10 +17,14 @@ exports.get = function(req,res){
 		var opponent = game.first
 		var hasTurn = 'false'
 
-		if(req.user.username == game.first){
+		if(game.first == req.user.username){
 			playerColour = 0
 			opponent = game.second
+
+			if(game.second == req.user.username)
+				playerColour = game.turn
 		}
+		
 		if(playerColour == game.turn)
 			hasTurn = 'true'
 
@@ -58,5 +62,5 @@ exports.post = function(req, res){
 	if(movingPiece != null)
 		pieces.push(movingPiece)
 
-	return game.saveGame(res, req.user, pieces)
+	return game.saveGame(res, req.user, pieces, 'chess')
 }

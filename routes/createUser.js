@@ -26,7 +26,7 @@ exports.create = function(req, res){
 					username: name,
 					hash: hash,
 					salt: salt,
-					games: {chess:[]}
+					games: {chess:[],ships:[]}
 				}
 
 				client.set('user:' + name, JSON.stringify(user), function(err, reply) {
