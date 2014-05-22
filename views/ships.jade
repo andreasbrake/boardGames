@@ -2,7 +2,7 @@ html(lang='en')
 	head
 		meta(charset='utf-8')
 		meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
-		title Chess: Bored Games
+		title Battling Ships: Bored Games
 		link(rel='stylesheet' href='css/ships.css')
 		link(rel='stylesheet' href='css/style.css')
 
@@ -22,7 +22,7 @@ html(lang='en')
 			- var columns = ['a','b','c','d','e','f','g','h','i','j']
 			- var rows =    ['1','2','3','4','5','6','7','8','9','10']
 
-			input.hidden#playerColour(type='text' value= playerColour disabled)
+			h.hidden#hasTurn(value= hasTurn)
 			input.hidden#shotData(form='shootForm' type='text' name='shot' value='hi')
 
 			form#shootForm(method='post')
