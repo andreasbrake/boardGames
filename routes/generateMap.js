@@ -105,7 +105,7 @@ exports.ships = function(){
 		shots1:[], 	// Player1 attempts
 		ready2:0, 	// Player2 ready
 		data2:[], 	// Player2 pieces
-		shots2:[]	// Player1 attempts
+		shots2:[]	// Player2 attempts
 	}
 
 	var carrier = {

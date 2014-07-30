@@ -16,10 +16,12 @@ html(lang='en')
 			a.nav-button(href='/logout') logout
 		.main
 			h1 Chess!
-			- if(hasTurn == 'true')
-				h2= "It is your turn"
+			- if(victor != 'none')
+				h2#status= victor + " HAS WON!"
+			- else if(hasTurn == 'true')
+				h2#status= "It is your turn"
 			- else
-				h2= "It is " + opponent + "'s turn"
+				h2#status= "It is " + opponent + "'s turn"
 			- var columns = ['a','b','c','d','e','f','g','h']
 			- var rows = ['1','2','3','4','5','6','7','8']
 

@@ -32,6 +32,7 @@ exports.selectGame = function(req, res){
 				second:user.username,
 				turn:0,
 				turnNumber:0,
+				victor: -1,
 				data:newGame
 			}
 			client.multi()
@@ -104,7 +105,7 @@ exports.selectGame = function(req, res){
 		})
 	}
 }
-exports.saveGame = function(res, user, game,gameType){
+exports.saveGame = function(res, user, game, gameType, gameOver){
 	if(gameType == 'chess')
 		var gameId = user.games.chess[gameIndex]
 	else if(gameType == 'ships')
@@ -112,17 +113,28 @@ exports.saveGame = function(res, user, game,gameType){
 
 	client.get('game:'+gameId,function(err, oldDataString){
 		var oldData = JSON.parse(oldDataString)
+		var victor = oldData.victor
 
 		if(oldData.turn == 0)
 			var newTurn = 1
 		else
 			var newTurn = 0
 
+		if(victor >= 0)
+			return // if the game is already over, don't save
+		else if(gameOver){ // Set the appropriate victor
+			if(oldData.first == user.username)
+				victor = 0
+			else if(oldData.second == user.username)
+				victor = 1
+		}
+
 		var gameData = {
 			first:oldData.first,
 			second: oldData.second,
 			turn: newTurn,
 			turnNumber: (oldData.turnNumber + 1),
+			victor: victor,
 			data:game
 		}
 
