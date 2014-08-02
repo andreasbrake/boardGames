@@ -69,7 +69,7 @@ exports.chess = function(){
 			else if(columns[j] == 'd'){
 				if(rows[i] == '1')
 					pieces.push({
-						name:"king",
+						name:"queen",
 						colour:0,
 						location:cellId
 					})
@@ -83,7 +83,7 @@ exports.chess = function(){
 			else if(columns[j] == 'e'){
 				if(rows[i] == '1')
 					pieces.push({
-						name:"queen",
+						name:"king",
 						colour:0,
 						location:cellId
 					})
