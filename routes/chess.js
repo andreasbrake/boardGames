@@ -1,29 +1,19 @@
 var client = require('../redisdb').client
 var game = require('./getGame.js')
 
-var pieces = []
-
 exports.get = function(req,res){
-	var gameIndex = game.loadGame()
-	var gameId = req.user.games.chess[gameIndex]
-
-	client.get('game:'+gameId,function(err,gameString){
-		if(err) console.log('error loading game')
-
-		var game = JSON.parse(gameString)
-
+	var gameId = req.user.currentGame
+	console.log("getting game: " + gameId)
+	game.getGame(gameId,function(game){
 		if(game == null){
 			console.log('error')
 			console.log('gameId: ' + gameId)
-			console.log('gameIndex: ' + gameIndex)
-			console.log(gameString)
 			console.log(req.user)
 		}
-		pieces = game.data
+		var pieces = game.data
 
 		var playerColour = 1
 		var opponent = game.first
-		var hasTurn = 'false'
 		var victor = 'none'
 
 		if(game.first == req.user.username){
@@ -33,9 +23,6 @@ exports.get = function(req,res){
 			if(game.second == req.user.username) // Occurs when playing against yourself (during practice)
 				playerColour = game.turn // Ensures your are always the one controlling the pieces
 		}
-		
-		if(playerColour == game.turn)
-			hasTurn = 'true'
 
 		if(game.victor > -1){
 			if(playerColour == game.victor)
@@ -44,45 +31,53 @@ exports.get = function(req,res){
 				victor = opponent
 		}
 
+		console.log('staring: ' + gameId)
 		return res.render('chess.jade',{
 			pieces:pieces,
-			playerColour:playerColour,
-			hasTurn:hasTurn,
+			playerColour: playerColour,
 			user:req.user.username,
 			opponent:opponent,
+			gameId:gameId,
 			victor:victor
 		})
 	})
 }
-exports.post = function(req, res){
-	var move = req.body.movement + ""
-	var moveFrom = (move[0]+move[1]) 
-	var moveTo = (move[2]+move[3])
+exports.saveGame = function(gameId, moveFrom, moveTo, callback){
 	var kingTake = false
+	var kingColour = -1
 
+	console.log(moveFrom, moveTo)
 	var movingPiece = null
-	for(var i=0; i<pieces.length; i++){ // Goes through all the game pieces (at the last GET request)
-		var currTile = pieces[i].location
-		if(currTile == moveFrom) // Gets our desired piece from the list of game pieces based on its location.
-			movingPiece = pieces.splice(i,1)[0]
-	}
-	// MovingPiece will be null if the player has submitted a move of empty space (won't happen unless player is cheating)
+	game.getGame(gameId,function(oldData){
+		var pieces = oldData.data
 
-	if(movingPiece == null)
-		return res.redirect('/chess') // Don't allow data to save
-
-	movingPiece.location = moveTo // Set pieces location to the desired move spot
-	for(var i=0; i<pieces.length; i++){
-		var currTile = pieces[i].location
-		if(currTile == moveTo){
-			if(pieces[i].name == "king")
-				kingTake = true
-			pieces[i] = movingPiece // Replaces piece at move location with the moving piece
-			movingPiece = null
+		for(var i=0; i<pieces.length; i++){ // Goes through all the game pieces (at the last GET request)
+			var currTile = pieces[i].location
+			if(currTile == moveFrom) // Gets our desired piece from the list of game pieces based on its location.
+				movingPiece = pieces.splice(i,1)[0]
 		}
-	}
-	if(movingPiece != null)
-		pieces.push(movingPiece)
+		// MovingPiece will be null if the player has submitted a move of empty space (won't happen unless player is cheating)
 
-	return game.saveGame(res, req.user, pieces, 'chess', kingTake)
+		if(movingPiece == null)
+			return callback(oldData) // Don't allow anything to be saved if there shouldn't be a piece moving
+
+		movingPiece.location = moveTo // Set pieces location to the desired move spot
+		for(var i=0; i<pieces.length; i++){
+			var currTile = pieces[i].location
+			if(currTile == moveTo){
+				if(pieces[i].name == "king"){
+					kingTake = true
+					kingColour = pieces[i].colour
+				}
+				pieces[i] = movingPiece // Replaces piece at move location with the moving piece
+				movingPiece = null
+			}
+		}
+		if(movingPiece != null)
+			pieces.push(movingPiece)
+
+		game.saveGame(gameId, pieces, 'chess', kingTake, !kingColour, function(udpatedGame){
+			return callback(udpatedGame)
+		})
+	})
 }

@@ -2,13 +2,26 @@ var columns = ['a','b','c','d','e','f','g','h']
 var rows = ['1','2','3','4','5','6','7','8']
 var moveOptions = []
 
+var practice = 0
+var turn = 0
+
 $(document).ready(function(){
+
+	//setBackgrounds()
+})
+function setTurnData(t, p){
+	practice = p
+	turn = t
+}
+function selectionCheck(){
 	var moveFrom = ""
 	var moveTo = ""
+	
 	$('#submitButton').css('marginLeft','-1000')
 
-	setBackgrounds()
-	
+	$("#submitButton").click(function(event){
+		submitMove(moveFrom, moveTo)
+	})
 	$(".tile").click(function(event){
 		var tile = "" + event.currentTarget.id
 
@@ -42,14 +55,14 @@ $(document).ready(function(){
 			$('#submitButton').css('marginLeft','-1000')
 	})
 	function select1(tile){
-		console.log($('#hasTurn').attr('value'))
+		console.log(turn)
 		console.log($('#playerColour').attr('value'))
 
 		if($('#' + tile).html() == "")
 			return
-		if($('#hasTurn').attr('value') == 'false')
+		if((turn != $('#playerColour').attr('value')) && !practice)
 			return
-		if($('#' + tile + 'colour').html() != $('#playerColour').attr('value'))
+		if(($('#' + tile + 'colour').html() != $('#playerColour').attr('value')) && !practice)
 			return
 
 		setBackgrounds()
@@ -109,4 +122,4 @@ $(document).ready(function(){
 			$('#'+moveOptions[i]).css('backgroundColor','rgb(150,150,255)')
 		}
 	}
-})
+}

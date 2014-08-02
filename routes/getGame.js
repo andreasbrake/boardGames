@@ -1,7 +1,6 @@
 var bcrypt = require('bcrypt')
 var genMap = require('./generateMap.js')
 var client = require('../redisdb').client
-var gameIndex = -1
 
 exports.getList = function(req, res){
 	var games = req.user.games
@@ -17,19 +16,20 @@ exports.selectGame = function(req, res){
 	if(method == 'newGame'){
 		bcrypt.genSalt(function(err,salt){
 			if(gameType == 'chess'){
-				gameIndex = user.games.chess.length
 				user.games.chess.push(salt)
 				var newGame = genMap.chess()
 			}
 			else if(gameType == 'ships'){
-				gameIndex = user.games.ships.length
 				user.games.ships.push(salt)
 				var newGame = genMap.ships()
 			}
 			
+			user.currentGame = salt
+
 			var gameData = {
 				first:user.username,
 				second:user.username,
+				practice: 1,
 				turn:0,
 				turnNumber:0,
 				victor: -1,
@@ -44,23 +44,23 @@ exports.selectGame = function(req, res){
 				})
 		})
 	}
-	else if(method.substring(0,4) == 'game'){
-		gameIndex = method.substring(4)
-		return res.redirect('/' + gameType)
-	}
-	else if(method.substring(0,6) == 'versus'){
+	else if(method.substring(0,4) == 'game'){ // Continue a game
 		if(gameType == 'chess')
-			gameIndex = user.games.chess.length
+			user.currentGame = user.games.chess[method.substr(4,1)]
 		else
-			gameIndex = user.games.ships.length
+			user.currentGame = user.games.ships[method.substr(4,1)]
 
-		player2 = method.substring(6)
-		player2exists()
+		client.set('user:'+user.username,JSON.stringify(user),function(err,rep){
+			if(err) console.log('error saving user')
+			return res.redirect('/' + gameType)
+		})
 	}
-	function player2exists(){
-		client.exists('user:'+player2,function(err,ex){
+	else if(method.substring(0,6) == 'versus'){ // Challenge someone
+		player2 = method.substring(6)
+
+		client.exists('user:'+player2,function(err,exists){
 			if(err) console.log(err)
-			if(ex)
+			if(exists)
 				return setData()
 			else
 				return console.log('error')
@@ -73,9 +73,12 @@ exports.selectGame = function(req, res){
 			else
 				var newGame = genMap.ships()
 
+			user.currentGame = salt
+			
 			var gameData = {
 				first: ("" + user.username),
 				second: ("" +player2),
+				practice: 0,
 				turn:0,
 				turnNumber:0,
 				data:newGame
@@ -105,12 +108,7 @@ exports.selectGame = function(req, res){
 		})
 	}
 }
-exports.saveGame = function(res, user, game, gameType, gameOver){
-	if(gameType == 'chess')
-		var gameId = user.games.chess[gameIndex]
-	else if(gameType == 'ships')
-		var gameId = user.games.ships[gameIndex]
-
+exports.saveGame = function(gameId, game, gameType, gameOver, newVictor, callback){
 	client.get('game:'+gameId,function(err, oldDataString){
 		var oldData = JSON.parse(oldDataString)
 		var victor = oldData.victor
@@ -123,15 +121,13 @@ exports.saveGame = function(res, user, game, gameType, gameOver){
 		if(victor >= 0)
 			return // if the game is already over, don't save
 		else if(gameOver){ // Set the appropriate victor
-			if(oldData.first == user.username)
-				victor = 0
-			else if(oldData.second == user.username)
-				victor = 1
+			victor = newVictor
 		}
 
 		var gameData = {
-			first:oldData.first,
+			first: oldData.first,
 			second: oldData.second,
+			practice: oldData.practice,
 			turn: newTurn,
 			turnNumber: (oldData.turnNumber + 1),
 			victor: victor,
@@ -140,10 +136,13 @@ exports.saveGame = function(res, user, game, gameType, gameOver){
 
 		client.set('game:'+gameId,JSON.stringify(gameData),function(err,rep){
 			if(err) console.log('error saving game')
-			return res.redirect('/' + gameType)
+			return callback(gameData)
 		})
 	})
 }
-exports.loadGame = function(){
-	return gameIndex
+exports.getGame = function(gameId, callback){
+	client.get('game:'+gameId,function(err, gameData){
+		if(err) console.log("error getting game: getGame.js 154")
+		return callback(JSON.parse(gameData))
+	})
 }

@@ -5,15 +5,97 @@ html(lang='en')
 		title Chess: Bored Games
 		link(rel='stylesheet' href='css/chess.css')
 		link(rel='stylesheet' href='css/style.css')
-
+		script(type='text/javascript' src="/js/socket.io.js")
 		script(type='text/javascript' src="/js/chessPieceMoves.js")
 		script(type='text/javascript' src="/js/jquery.js")
 		script(type='text/javascript' src='/js/chessPieceSelection.js')
-			
+		script.
+			var socket = io('http://localhost')
+
+			socket.on('message', function(data){
+				alert(data.message)
+			})
+
+			$(document).ready(function(){
+				var id = $("#username")
+				socket.emit('getGame', { gameId: $("#username")[0].innerHTML})
+				socket.on('ready', function (data) {
+					console.log(data)
+					socket.emit('joinGame', { gameId: $("#username")[0].innerHTML})
+				});	
+			})
+			socket.on('gamePieces', function (data) {
+				console.log(data)
+
+				setTurnData(data.turn, data.practice)
+
+				var playField = document.getElementById("field");
+				while (playField.firstChild) {
+					playField.removeChild(playField.firstChild);
+				}
+				generateField(data.pieces)
+			});
+			function submitMove(cFrom, cTo){
+				socket.emit('saveGame', { game: $("#username")[0].innerHTML, from: cFrom, to: cTo})
+			}
+			function generateField(pieces){
+				var columns = ['a','b','c','d','e','f','g','h']
+				var rows = ['8','7','6','5','4','3','2','1']
+
+				var topRowInner = ""
+				for(var i=0; i<columns.length; i++){
+					topRowInner += "<td><h>" + columns[i] + "</h></td>"
+				}
+				var topRow = $("<tr class='topRow'><td>" + topRowInner + "</td></tr>")
+
+				topRow.appendTo($("#field"))
+
+				for(var i=0; i<rows.length; i++){
+					var fieldRow = "<tr>"
+					for(var j=-1; j<columns.length; j++){
+						if(j == -1){
+							fieldRow += "<td class='sideColumn'>"
+							fieldRow += rows[i]
+							continue
+						}
+
+						var cellname = columns[j] + rows[i]
+						var cellnumber = i*8 + j
+						var piece = findPiece(pieces, cellname)
+
+						if((i + j) % 2 == 0)
+							fieldRow += "<td class='tile' id='" + cellname + "' style='background-color:white'>"
+						else
+							fieldRow += "<td class='tile' id='" + cellname + "' style='background-color:black'>"
+
+						if(piece != null){
+							if(piece.colour == 0)
+								fieldRow += "<h class='first' id='" + cellname + "name'>" + piece.name + "</h>"
+							else
+								fieldRow += "<h class='second' id='" + cellname + "name'>" + piece.name + "</h>"
+							fieldRow += "<h class='hidden' id='" + cellname + "colour'>" + piece.colour + "</h>"
+						}
+						fieldRow += "</td>"
+					}
+					fieldRow += "</tr>"
+
+					$(fieldRow).appendTo($("#field"))
+				}
+
+				selectionCheck()
+			}
+			function findPiece(pieces, location){
+				for(var i=0; i<pieces.length; i++){
+					if(pieces[i].location == location)
+						return pieces[i]
+				}
+				return null
+			}
 	body
 		.header
 			a.nav-button(href='/') home
 			a.nav-button(href='/logout') logout
+			h#username= gameId
 		.main
 			h1 Chess!
 			- if(victor != 'none')
@@ -22,35 +104,11 @@ html(lang='en')
 				h2#status= "It is your turn"
 			- else
 				h2#status= "It is " + opponent + "'s turn"
-			- var columns = ['a','b','c','d','e','f','g','h']
-			- var rows = ['8','7','6','5','4','3','2','1']
 
 			input.hidden#playerColour(type='text' value= playerColour disabled)
-			input.hidden#hasTurn(type='text' value= hasTurn disabled)
+			input.hidden#hasTurn(type='text' value="" disabled)
 			input.hidden#moveData(form='moveForm' type='text' name='movement' value='hi')
 
-			form#moveForm(method='post')
-				input.nav-button#submitButton(form='moveForm' type='submit' value='Submit Move')
-			table
-				tr.topRow
-					td
-					- for(var j=0; j<columns.length; j++)
-						td
-							h= columns[j]
-				- for(var i=0; i<rows.length; i++)
-					tr
-						td.sideColumn
-							h= rows[i]
-						- for(var j=0; j<columns.length; j++)
-							- var cellname = columns[j] + rows[i]
-							td.tile(id = cellname)
-								- each p in pieces
-									- if(p.location == cellname)
-										- var name = p.name + ""
-										if(p.colour == 0)
-											h.first(id=cellname+'name')= p.name
-										else
-											h.second(id=cellname+'name')= p.name
-										h.hidden(id=cellname+'colour')= p.colour
-							
-							
+			button.nav-button#submitButton= "submit"
+
+			table#field
