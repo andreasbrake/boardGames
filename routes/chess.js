@@ -32,7 +32,12 @@ exports.get = function(req,res){
 		}
 
 		console.log('staring: ' + gameId)
+
+		var ip_addr = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+		var port    = process.env.OPENSHIFT_NODEJS_PORT || '3000'
+
 		return res.render('chess.jade',{
+			host: ip_addr + ":" + port,
 			pieces:pieces,
 			playerColour: playerColour,
 			user:req.user.username,
