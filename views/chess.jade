@@ -13,7 +13,11 @@ html(lang='en')
 			var socket = null
 			$(document).ready(function(){
 				var id = $("#username")
-				socket = io(document.getElementById("host").innerHTML)
+
+				var origin = window.location.origin
+				if(origin != "http://127.0.0.1:3000")
+					origin = origin + ":8000"
+				socket = io(window.location.origin)
 
 				socket.emit('getGame', { gameId: $("#username")[0].innerHTML})
 				socket.on('ready', function (data) {
@@ -94,7 +98,6 @@ html(lang='en')
 			a.nav-button(href='/') home
 			a.nav-button(href='/logout') logout
 			h#username= gameId
-			h#host= host
 		.main
 			h1 Chess!
 			- if(victor != 'none')
