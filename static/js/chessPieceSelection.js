@@ -5,23 +5,24 @@ var moveOptions = []
 var practice = 0
 var turn = 0
 
-$(document).ready(function(){
+var moveFrom = ""
+var moveTo = ""
 
-	//setBackgrounds()
+$(document).ready(function(){
+	$("#submitButton").click(function(event){
+		submitMove(moveFrom, moveTo)
+		moveFrom = ""
+		moveTo = ""
+	})
 })
 function setTurnData(t, p){
 	practice = p
 	turn = t
 }
+
 function selectionCheck(){
-	var moveFrom = ""
-	var moveTo = ""
-	
 	$('#submitButton').css('marginLeft','-1000')
 
-	$("#submitButton").click(function(event){
-		submitMove(moveFrom, moveTo)
-	})
 	$(".tile").click(function(event){
 		var tile = "" + event.currentTarget.id
 

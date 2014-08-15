@@ -51,7 +51,7 @@ exports.createConnection = function(client){
 function createClient(client){
 	return function(updata, channel){ // updata = updated data
 		var id = client.id
-		console.log("getting data from: " + channel)
+		console.log("getting data from: " + channel + " for " + id)
 		if(channel != null)
 			client.emit('gamePieces', updata)
 	}
