@@ -3,7 +3,7 @@ home(lang='en')
 		title Darlene Home
 		meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1')
 		link(rel='stylesheet' href='/css/style.css')
-
+		link(rel='stylesheet' href='/css/getGame.css')
 
 		script(type='text/javascript').
 			function challenge(gameType){
@@ -15,7 +15,9 @@ home(lang='en')
 		.header
 			a.nav-button(href='/') home
 			a.nav-button(href='/logout') logout
-		.main
+			h1#title Start or Choose a Game!
+		#background
+		#main
 			.chess-games
 				h2 Chess
 				form(id="chessChallengeForm" action="/getGame/" method='get')
@@ -23,9 +25,18 @@ home(lang='en')
 					h or
 					input(id="chessOpponent" type='text' value="")
 					input(type='submit' value='Challenge' onclick='challenge("chess")')
-				- for(var i=0; i<chess; i++){
-					a.nav-button(href='/getGame/chess@game' + i)= ("Chess game " + i)
-				- }
+					br
+					br
+					table#chess-games(cellspacing = "0" cellpadding = "0")				
+						- for(var i=0; i<chess; i++){
+							tr
+								td.game-name
+									h= "Chess game " + i
+								td
+									a.game-button(href='/getGame/chess@game' + i)= ("Play")
+								td
+									a.game-button(href='/deleteGame/chess@game' + i)= ("Delete")
+						- }
 			.ships-games
 				h2 Battling Ships
 				form(id="shipsChallengeForm" action="/getGame/" method='get')

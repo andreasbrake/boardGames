@@ -1,0 +1,55 @@
+#main{
+	margin-right: 200px;
+	margin-left: 200px;
+
+	padding: 75px;
+
+	border-bottom-right-radius: 50px;
+	border-bottom-left-radius: 50px;
+
+	z-index: 1;
+
+	background-color: white;
+
+	box-shadow: 0px 5px 75px #000;
+}
+#background{
+	position:fixed;
+
+	top: 0;
+	left: 0;
+
+	height: 100%;
+	width: 100%;
+
+	background-color:rgb(200,200,200);
+
+	z-index: -1;
+}
+#chess-games{
+	margin-left: 100px;
+	margin-top: 25px;
+	margin-bottom: 75px;
+}
+.game-name{
+	width: 100px !important;
+
+	border-right: 1px solid;
+}
+#chess-games > tbody > tr > td{
+	width: 150px;
+	padding-top: 10px;
+	padding-bottom:10px;
+}
+.game-button{
+	display: block;
+	text-align: center;
+	width: 75px;
+
+	line-height: 24px;
+
+	background-color: #707070;
+}
+.game-button:hover{
+	background-color: #eeeeee;
+}
