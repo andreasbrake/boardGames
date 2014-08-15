@@ -12,18 +12,14 @@ html(lang='en')
 		script.
 			var socket = null
 			$(document).ready(function(){
-				var id = $("#username")
-
 				var origin = window.location.origin
 				if(origin != "http://127.0.0.1:3000")
 					origin = origin + ":8000"
 				socket = io(window.location.origin)
-
-				socket.emit('getGame', { gameId: $("#username")[0].innerHTML})
-				socket.on('ready', function (data) {
-					console.log(data)
+				
+				socket.on('connect', function(data){
 					socket.emit('joinGame', { gameId: $("#username")[0].innerHTML})
-				});
+				})
 				socket.on('gamePieces', function (data) {
 					console.log(data)
 
@@ -37,6 +33,7 @@ html(lang='en')
 				})
 			})
 			function submitMove(cFrom, cTo){
+				console.log('saving game')
 				socket.emit('saveGame', { game: $("#username")[0].innerHTML, from: cFrom, to: cTo})
 			}
 

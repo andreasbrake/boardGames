@@ -14,6 +14,7 @@ var chess = require('./routes/chess.js')
 var ships = require('./routes/ships.js')
 var game = require('./routes/getGame.js')
 var createUser = require('./routes/createUser.js')
+var ioHandler = require('./io-handler.js')
 
 /* Initialize express */
 var site = express();
@@ -31,6 +32,7 @@ site.engine('jade', jade.__express);
 /* Run on port 3000 */
 var server = site.listen(port, ip_addr);
 var io = require('socket.io')(server);
+ioHandler.init(io)
 
 site.get('/',function(req, res){
 	if(req.user == null)
@@ -101,27 +103,4 @@ function auth(req, res, next){
 	else res.redirect('/login')
 }
 
-io.on('connection', function (socket) {
-	console.log("io connection at: " + socket)
-	socket.emit('ready', { probe: 'hello world' });
-	socket.on('joinGame', function(data){
-		socket.join(data.gameId)
-		console.log('joining game: ' + data.gameId)
-	})
-	socket.on('getGame', function (data) {
-		console.log('io reading: ' + data.gameId)
-		game.getGame(data.gameId, function(game){
-			if(game == null)
-				console.log('null game')
-			else{
-				socket.emit('gamePieces', { pieces: game.data, turn: game.turn, practice: game.practice })
-			}
-		})
-	})
-	socket.on('saveGame', function(data){
-		chess.saveGame(data.game, data.from, data.to, function(updatedGame){
-			socket.emit('gamePieces', { pieces: updatedGame.data, turn: updatedGame.turn, practice: updatedGame.practice})
-			socket.broadcast.to(data.game).emit('gamePieces', { pieces: updatedGame.data, turn: updatedGame.turn, practice: updatedGame.practice})
-		})
-	})
-})
+io.on('connection', ioHandler.createConnection)
