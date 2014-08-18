@@ -66,6 +66,13 @@ exports.selectGame = function(req, res){
 				return console.log('error')
 		})
 	}
+	else if(method.substring(0,6) == 'delete'){ // Delete Game
+		console.log('deleting ' + user.games.chess[method.substr(6,1)])
+		if(gameType == 'chess')
+			getGame(user.games.chess[method.substr(6,1)], deleteGame)
+		else
+			getGame(user.games.ships[method.substr(6,1)], deleteGame)
+	}
 	function setData(){
 		bcrypt.genSalt(function(err,salt){
 			if(gameType == 'chess')
@@ -81,7 +88,8 @@ exports.selectGame = function(req, res){
 				practice: 0,
 				turn:0,
 				turnNumber:0,
-				data:newGame
+				data:newGame,
+				victor:-1
 			}
 
 			client.get('user:' + player2, function(err, playerString){
@@ -106,6 +114,31 @@ exports.selectGame = function(req, res){
 					})
 			})
 		})
+	}
+	function deleteGame(game){
+		var id = ""
+
+		if(game.victor == -1){
+			if(game.first == user.username)
+				game.victor = 2
+			else
+				game.victor = 1
+		}
+
+		console.log(user.games.chess)
+		if(gameType == 'chess')
+			id = user.games.chess.splice(method.substr(6,1),1)
+		else
+			id = user.games.ships.splice(method.substr(6,1),1)
+
+		console.log(user.games.chess)
+		client.multi()
+			.set('user:'+user.username,JSON.stringify(user))
+			.set('game:'+id,JSON.stringify(game))
+			.exec(function(err,rep){
+				if (err) return console.error('error deleting')
+				return res.redirect('/getGame')
+			})
 	}
 }
 exports.saveGame = function(gameId, game, gameType, gameOver, newVictor, callback){
@@ -140,7 +173,8 @@ exports.saveGame = function(gameId, game, gameType, gameOver, newVictor, callbac
 		})
 	})
 }
-exports.getGame = function(gameId, callback){
+exports.getGame = getGame
+function getGame (gameId, callback){
 	client.get('game:'+gameId,function(err, gameData){
 		if(err) console.log("error getting game: getGame.js 154")
 		return callback(JSON.parse(gameData))

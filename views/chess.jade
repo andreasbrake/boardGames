@@ -23,7 +23,16 @@ html(lang='en')
 				socket.on('gamePieces', function (data) {
 					console.log(data)
 
-					setTurnData(data.turn, data.practice)
+					setTurnData(data.turn, data.practice, data.victor)
+
+					if(data.turn == $('#playerColour').attr('value') && data.victor == -1)
+						$("#title")[0].innerHTML = "Chess! It is your turn"
+					else if(data.victor == -1)
+						$("#title")[0].innerHTML = "Chess! It is " + $('#opponentData')[0].value + "'s turn"
+					else if(data.victor == $('#playerColour').attr('value'))
+						$("#title")[0].innerHTML = "Chess! You have won!!"
+					else
+						$("#title")[0].innerHTML = "Chess! " + $('#opponentData')[0].value + " has won!!"
 
 					var playField = document.getElementById("field");
 					while (playField.firstChild) {
@@ -91,23 +100,24 @@ html(lang='en')
 				return null
 			}
 	body
-		.header
+		#header
 			a.nav-button(href='/') home
 			a.nav-button(href='/logout') logout
 			h#username= gameId
-		.main
-			h1 Chess!
 			- if(victor != 'none')
-				h2#status= victor + " HAS WON!"
+				h1#title= "Chess! " + victor + " HAS WON!"
 			- else if(hasTurn == 'true')
-				h2#status= "It is your turn"
+				h1#title= "Chess! It is your turn"
 			- else
-				h2#status= "It is " + opponent + "'s turn"
-
+				h1#title= "Chess! " + " It is " + opponent + "'s turn"
+			
+		#background
+		#main
 			input.hidden#playerColour(type='text' value= playerColour disabled)
 			input.hidden#hasTurn(type='text' value="" disabled)
 			input.hidden#moveData(form='moveForm' type='text' name='movement' value='hi')
+			input.hidden#opponentData(value= opponent)
 
-			button.nav-button#submitButton= "submit"
+			div#submitButton= "submit"
 
 			table#field

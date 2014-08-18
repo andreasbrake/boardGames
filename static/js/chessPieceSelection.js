@@ -4,6 +4,7 @@ var moveOptions = []
 
 var practice = 0
 var turn = 0
+var victor = -1
 
 var moveFrom = ""
 var moveTo = ""
@@ -15,13 +16,14 @@ $(document).ready(function(){
 		moveTo = ""
 	})
 })
-function setTurnData(t, p){
+function setTurnData(t, p, v){
 	practice = p
 	turn = t
+	victor = v
 }
 
 function selectionCheck(){
-	$('#submitButton').css('marginLeft','-1000')
+	hideSubmitButton()
 
 	$(".tile").click(function(event){
 		var tile = "" + event.currentTarget.id
@@ -51,9 +53,9 @@ function selectionCheck(){
 		}
 
 		if(moveFrom != "" && moveTo != "")
-			$('#submitButton').css('marginLeft','50')
+			showSubmitButton()
 		else
-			$('#submitButton').css('marginLeft','-1000')
+			hideSubmitButton()
 	})
 	function select1(tile){
 		console.log(turn)
@@ -62,6 +64,8 @@ function selectionCheck(){
 		if($('#' + tile).html() == "")
 			return
 		if((turn != $('#playerColour').attr('value')) && !practice)
+			return
+		if(victor > -1)
 			return
 		if(($('#' + tile + 'colour').html() != $('#playerColour').attr('value')) && !practice)
 			return
@@ -122,5 +126,17 @@ function selectionCheck(){
 		for(var i=0; i<moveOptions.length; i++){
 			$('#'+moveOptions[i]).css('backgroundColor','rgb(150,150,255)')
 		}
+	}
+	function showSubmitButton(){
+		$('#submitButton').css({'width':'120px','margin-left':'-60px'})
+		setTimeout(function(){
+			$('#submitButton').css({'color':'black'})
+		},300)
+	}
+	function hideSubmitButton(){
+		$('#submitButton').css({'color':'transparent'})
+		setTimeout(function(){
+			$('#submitButton').css({'width':'0px','margin-left':'0px'})
+		},100)
 	}
 }

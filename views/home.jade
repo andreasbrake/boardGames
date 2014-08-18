@@ -2,30 +2,69 @@ html(lang='en')
 	head
 		meta(charset='utf-8')
 		meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
-		title Bored Games
+		title Home | Bored Games
 		link(rel='stylesheet' href='css/home.css')
 		link(rel='stylesheet' href='css/style.css')
+		script(type='text/javascript' src='/js/jquery.js')
+
+		script.
+			$(document).ready(function(){
+				$("#login").click(function(){
+					openLoginPanel()
+				})
+			})
+			function openLoginPanel(){
+				maskStr = "<div id='grey-mask'></div>"
+				paneStr = "<div id='login-pane'><form id='login-form' name='login', action='/login', method='post'><input type='text', name='username'></input><input type='password', name='password'></input><input class='utility-button' type='submit' role='button' value='login'></input></form></div>"
+				
+
+				$(maskStr).appendTo($(document.body))
+				$(paneStr).appendTo($(document.body))
+
+				setTimeout(function(){
+					$("#grey-mask")[0].style.opacity = "0.6"
+					$("#login-pane")[0].style.right = "-75px"
+				},0.1)
+			}
+			function closeLoginPanel(){
+				$("#grey-mask")[0].style.opacity = "0"
+				$("#login-pane")[0].style.right = "-300px"
+				setTimeout(function(){
+					$("#grey-mask")[0].outerHTML = ""
+					$("#login-pane")[0].outerHTML = ""
+				},0.5)			
+			}
 	body
-		.header
+		#header
 			- if(user != 'null')
 				h= "logged in as " + user
 				a.nav-button(role='button' href='/profile') profile
 				a.nav-button(role='button' href='/logout') logout
 			- else
-				a.nav-button(role='button' href='/login') login
+				a.nav-button#login(role='button') login
 				a.nav-button(role='button' href='/signup') signup
-		.main
-			h1 Welcome to Bored Games
-			h2 Fresh Start!
+		#background
+		#main
+			#body
+				h1 Welcome to Bored Games
+				h2 Fresh Start!
 
-			.game-panel
-				.game-button(onclick='window.location = "/getGame"')
-					h get Game
+				.game-panel
+					.menu-item(onclick='window.location = "/getGame"')
+						h Play Game
+					.menu-item
+						h Something
+					.menu-item
+						h Something
+					.menu-item
+						h Something
+					.border-left-slick
+					.border-right-slick
 					
-		.footer
-			br
-			p
-				| (Chat about us  
-				a(href='http://buyandsell-tentacularapps.rhcloud.com/'  target="_blank") here
-				| )
-			p
+			#footer
+				br
+				p
+					| (Chat about us  
+					a(href='http://buyandsell-tentacularapps.rhcloud.com/'  target="_blank") here
+					| )
+				p

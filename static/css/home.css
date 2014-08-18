@@ -1,0 +1,102 @@
+#body{
+	width: 500px;
+
+	margin-right: auto;
+	margin-left: auto;
+
+	padding-top: 100px;
+
+	overflow: auto;
+}
+.game-panel{
+	position: relative;
+
+	width: 250px;
+
+	margin-top: 50px;
+	margin-bottom: 50px;
+	margin-left: auto;
+	margin-right: auto;
+
+	padding-top: 25px;
+	padding-bottom: 50px;
+}
+.menu-item{
+	padding-top: 15px;
+	padding-bottom: 15px;
+
+	text-align: center;
+
+	line-height: 30px;
+	font-size: 32;
+	font-family: "Veranda", sans-serif;
+
+	color: #303030;
+
+	cursor: pointer;
+}
+.menu-item:hover{
+	font-size: 38;
+	color: #686868;
+}
+.utility-button{
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 0px;
+	
+	text-align: center;
+
+	line-height: 15px;
+	font-size: 18;
+	font-family: "Veranda", sans-serif;
+
+	color: #222;
+
+	border:none;
+	background: transparent;
+	cursor: pointer;
+}
+.utility-button:hover{
+	color: #555;
+}
+#grey-mask{
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	background-color: #000;
+	opacity: 0;
+
+	z-index: 3;
+
+	-webkit-transition: opacity 0.5s ease-in-out;
+       -moz-transition: opacity 0.5s ease-in-out;
+         -o-transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
+}
+#login-pane{
+	position: fixed;
+
+	top: 100px;
+	right: -300px;
+
+	width: 200px;
+
+	padding-top: 50px;
+	padding-left: 25px;
+	padding-right: 75px;
+
+	background-color: white;
+
+	border: 1px transparent;
+
+	border-radius: 10px;
+	z-index: 4;
+
+	-webkit-transition: right 0.5s ease-in-out;
+       -moz-transition: right 0.5s ease-in-out;
+         -o-transition: right 0.5s ease-in-out;
+            transition: right 0.5s ease-in-out;
+}

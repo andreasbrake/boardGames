@@ -55,6 +55,7 @@ table{
 }
 .carrier{
 	color: red;
+        background-image: url("../img/carrier")
 }
 .battleship{
 	color: green;
@@ -64,6 +65,21 @@ table{
 }
 .patroller{
 	color: purple;
+}
+.part1{
+    margin-left: 0px;
+}
+.part2{
+    margin-left: -50px;
+}
+.part3{
+    margin-left: -100px;
+}
+.part4{
+    margin-left: -150px;
+}
+.part5{
+    margin-left: -200px;
 }
 input{
 	margin-left: -1000px;

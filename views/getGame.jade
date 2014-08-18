@@ -1,6 +1,6 @@
 home(lang='en')
 	head
-		title Darlene Home
+		title Play Game | Bored Games
 		meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1')
 		link(rel='stylesheet' href='/css/style.css')
 		link(rel='stylesheet' href='/css/getGame.css')
@@ -12,7 +12,7 @@ home(lang='en')
 				console.log("/getGame/" + gameType + "@versus" + document.getElementById(gameType + "Opponent").value)
 			}
 	body
-		.header
+		#header
 			a.nav-button(href='/') home
 			a.nav-button(href='/logout') logout
 			h1#title Start or Choose a Game!
@@ -27,7 +27,7 @@ home(lang='en')
 					input(type='submit' value='Challenge' onclick='challenge("chess")')
 					br
 					br
-					table#chess-games(cellspacing = "0" cellpadding = "0")				
+					table#chess-games(cellspacing = "0" cellpadding = "0")
 						- for(var i=0; i<chess; i++){
 							tr
 								td.game-name
@@ -35,7 +35,7 @@ home(lang='en')
 								td
 									a.game-button(href='/getGame/chess@game' + i)= ("Play")
 								td
-									a.game-button(href='/deleteGame/chess@game' + i)= ("Delete")
+									a.game-button(href='/getGame/chess@delete' + i)= ("Delete")
 						- }
 			.ships-games
 				h2 Battling Ships

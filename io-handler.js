@@ -20,31 +20,23 @@ exports.createConnection = function(client){
 
 		newsletter.sub(data.gameId, clientCB)
 		game.getGame(data.gameId, function(game){
+			console.log("VICTOR 1 = " + game.victor)
 			if(game == null)
 				console.log('null game')
 			else{
-				client.emit('gamePieces', { pieces: game.data, turn: game.turn, practice: game.practice })
-			}
-		})
-	})
-	client.on('getGame', function (data) {
-		console.log('io reading: ' + data.gameId)
-		game.getGame(data.gameId, function(game){
-			if(game == null)
-				console.log('null game')
-			else{
-				client.emit('gamePieces', { pieces: game.data, turn: game.turn, practice: game.practice })
+				client.emit('gamePieces', { pieces: game.data, turn: game.turn, practice: game.practice, victor: game.victor })
 			}
 		})
 	})
 	client.on('saveGame', function(data){
 		console.log('saving game..')
 		chess.saveGame(data.game, data.from, data.to, function(updatedGame){
-			newsletter.pub(data.game, { pieces: updatedGame.data, turn: updatedGame.turn, practice: updatedGame.practice})
+			console.log("VICTOR = " + updatedGame.victor)
+			newsletter.pub(data.game, { pieces: updatedGame.data, turn: updatedGame.turn, practice: updatedGame.practice, victor: updatedGame.victor})
 		})
 	})
 	client.on('disconnect', function(){
-		console.log('disconnecting: ' + clientCB)
+		console.log('disconnecting: ' + clientCB())
 		newsletter.unsub(clientCB)
 	})
 }
@@ -54,5 +46,6 @@ function createClient(client){
 		console.log("getting data from: " + channel + " for " + id)
 		if(channel != null)
 			client.emit('gamePieces', updata)
+		return id
 	}
 }
