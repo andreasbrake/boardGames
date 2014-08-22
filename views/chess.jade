@@ -14,8 +14,10 @@ html(lang='en')
 			var currentBoard = null
 			var columns = ['a','b','c','d','e','f','g','h']
 			var rows = ['8','7','6','5','4','3','2','1']
+			var playerColour = 0
 
 			$(document).ready(function(){
+				playerColour = $('#playerColour')[0].value
 				var origin = window.location.origin
 				if(origin != "http://127.0.0.1:3000")
 					origin = origin + ":8000"
@@ -25,25 +27,27 @@ html(lang='en')
 					socket.emit('joinGame', { gameId: $("#username")[0].innerHTML})
 				})
 				socket.on('gamePieces', function (data) {
-					console.log(data)
 					if(currentBoard == null)
 						currentBoard = data.pieces
 					else if(currentBoard == data.pieces)
 						return
 
 					setTurnData(data.turn, data.practice, data.victor)
+					animateDiff(currentBoard, data.pieces, function(){
+						if(data.practice == 1)
+							playerColour = data.turn
 
-					if(data.turn == $('#playerColour').attr('value') && data.victor == -1)
-						$("#title")[0].innerHTML = "Chess! It is your turn"
-					else if(data.victor == -1)
-						$("#title")[0].innerHTML = "Chess! It is " + $('#opponentData')[0].value + "'s turn"
-					else if(data.victor == $('#playerColour').attr('value'))
-						$("#title")[0].innerHTML = "Chess! You have won!!"
-					else
-						$("#title")[0].innerHTML = "Chess! " + $('#opponentData')[0].value + " has won!!"
-					
-					console.log(data.pieces)
-					animateDiff(currentBoard, data.pieces, generateField)
+						generateField(data.pieces)
+
+						if(data.turn == playerColour && data.victor == -1)
+							$("#title")[0].innerHTML = "Chess! It is your turn"
+						else if(data.victor == -1)
+							$("#title")[0].innerHTML = "Chess! It is " + $('#opponentData')[0].value + "'s turn"
+						else if(data.victor == playerColour)
+							$("#title")[0].innerHTML = "Chess! You have won!!"
+						else
+							$("#title")[0].innerHTML = "Chess! " + $('#opponentData')[0].value + " has won!!"
+					})					
 				})
 			})
 			function submitMove(cFrom, cTo){
@@ -52,6 +56,7 @@ html(lang='en')
 			}
 
 			function generateField(pieces){
+				console.log('generating for ' + playerColour)
 				var playField = document.getElementById("field");
 				while (playField.firstChild) {
 					playField.removeChild(playField.firstChild);
@@ -59,7 +64,10 @@ html(lang='en')
 
 				var topRowInner = ""
 				for(var i=0; i<columns.length; i++){
-					topRowInner += "<td><h>" + columns[i] + "</h></td>"
+					if(playerColour == 0)
+						topRowInner += "<td><h>" + columns[i] + "</h></td>"
+					else
+						topRowInner += "<td><h>" + columns[7-i] + "</h></td>"
 				}
 				var topRow = $("<tr class='topRow'><td>" + topRowInner + "</td></tr>")
 
@@ -70,11 +78,14 @@ html(lang='en')
 					for(var j=-1; j<columns.length; j++){
 						if(j == -1){
 							fieldRow += "<td class='sideColumn'>"
-							fieldRow += rows[i]
+							if(playerColour == 0)
+								fieldRow += rows[i]
+							else
+								fieldRow += rows[7-i]
 							continue
 						}
 
-						if($('#playerColour').attr('value') == 0)
+						if(playerColour == 0)
 							var cellname = columns[j] + rows[i]
 						else
 							var cellname = columns[7-j] + rows[7-i]
@@ -111,23 +122,28 @@ html(lang='en')
 				currentBoard = newPieces
 
 				if(oldPieces == newPieces)
-					return callback(newPieces)
+					return callback()
 				testPiece(oldPieces, newPieces, 0, callback)
 			}
 			function testPiece(oldPieces, newPieces, i, callback){
-				console.log(newPieces[i])
 				if(i >= oldPieces.length)
-					callback(newPieces)
+					callback()
 				var pieceO = oldPieces[i]
 				var pieceN = newPieces[i]
 
-				var rowO = ((8-pieceO.location[1]) * 50 + 25) + "px"
-				var colO = (((columns.indexOf(pieceO.location[0])) * 50) + 25) + "px"
-				var rowN = ((8-pieceN.location[1]) * 50 + 25) + "px"
-				var colN = (((columns.indexOf(pieceN.location[0])) * 50) + 25) + "px"
-
+				if(playerColour == 0){
+					var rowO = ((8-pieceO.location[1]) * 50 + 25) + "px"
+					var colO = (((columns.indexOf(pieceO.location[0])) * 50) + 25) + "px"
+					var rowN = ((8-pieceN.location[1]) * 50 + 25) + "px"
+					var colN = (((columns.indexOf(pieceN.location[0])) * 50) + 25) + "px"
+				}
+				else{
+					var rowO = ((pieceO.location[1]-1) * 50 + 25) + "px"
+					var colO = (((7-columns.indexOf(pieceO.location[0])) * 50) + 25) + "px"
+					var rowN = ((pieceN.location[1]-1) * 50 + 25) + "px"
+					var colN = (((7-columns.indexOf(pieceN.location[0])) * 50) + 25) + "px"
+				}
 				if(pieceO.location != pieceN.location){
-					console.log(pieceN.location)
 					var diffPiece = $($("#" + pieceO.location + "piece")[0].outerHTML)
 					diffPiece[0].style.top = rowO
 					diffPiece[0].style.left= colO
@@ -135,14 +151,12 @@ html(lang='en')
 					$("#" + pieceO.location + "piece")[0].outerHTML = ""
 
 					setTimeout(function(){
-						console.log(pieceN.location)
 						$("#" + pieceO.location + "piece")[0].style.top = rowN
 						$("#" + pieceO.location + "piece")[0].style.left= colN
 
 						setTimeout(function(){
-							console.log('moved')
-							return callback(newPieces)
-						},400)
+							return callback()
+						},700)
 					},10)
 				}
 				else{
@@ -163,7 +177,7 @@ html(lang='en')
 			
 		#background
 		#main
-			input.hidden#playerColour(type='text' value= playerColour disabled)
+			input#playerColour(style='position:fixed; top: 100px; left: 10px' type='text' value= playerColour disabled)
 			input.hidden#hasTurn(type='text' value="" disabled)
 			input.hidden#moveData(form='moveForm' type='text' name='movement' value='hi')
 			input.hidden#opponentData(value= opponent)
