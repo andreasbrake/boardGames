@@ -11,6 +11,10 @@ html(lang='en')
 		script(type='text/javascript' src='/js/chessPieceSelection.js')
 		script.
 			var socket = null
+			var currentBoard = null
+			var columns = ['a','b','c','d','e','f','g','h']
+			var rows = ['8','7','6','5','4','3','2','1']
+
 			$(document).ready(function(){
 				var origin = window.location.origin
 				if(origin != "http://127.0.0.1:3000")
@@ -22,6 +26,10 @@ html(lang='en')
 				})
 				socket.on('gamePieces', function (data) {
 					console.log(data)
+					if(currentBoard == null)
+						currentBoard = data.pieces
+					else if(currentBoard == data.pieces)
+						return
 
 					setTurnData(data.turn, data.practice, data.victor)
 
@@ -33,12 +41,9 @@ html(lang='en')
 						$("#title")[0].innerHTML = "Chess! You have won!!"
 					else
 						$("#title")[0].innerHTML = "Chess! " + $('#opponentData')[0].value + " has won!!"
-
-					var playField = document.getElementById("field");
-					while (playField.firstChild) {
-						playField.removeChild(playField.firstChild);
-					}
-					generateField(data.pieces)
+					
+					console.log(data.pieces)
+					animateDiff(currentBoard, data.pieces, generateField)
 				})
 			})
 			function submitMove(cFrom, cTo){
@@ -47,8 +52,10 @@ html(lang='en')
 			}
 
 			function generateField(pieces){
-				var columns = ['a','b','c','d','e','f','g','h']
-				var rows = ['8','7','6','5','4','3','2','1']
+				var playField = document.getElementById("field");
+				while (playField.firstChild) {
+					playField.removeChild(playField.firstChild);
+				}
 
 				var topRowInner = ""
 				for(var i=0; i<columns.length; i++){
@@ -67,37 +74,80 @@ html(lang='en')
 							continue
 						}
 
-						var cellname = columns[j] + rows[i]
-						var cellnumber = i*8 + j
-						var piece = findPiece(pieces, cellname)
+						if($('#playerColour').attr('value') == 0)
+							var cellname = columns[j] + rows[i]
+						else
+							var cellname = columns[7-j] + rows[7-i]
 
 						if((i + j) % 2 == 0)
 							fieldRow += "<td class='tile' id='" + cellname + "' style='background-color:white'>"
 						else
 							fieldRow += "<td class='tile' id='" + cellname + "' style='background-color:black'>"
 
-						if(piece != null){
-							if(piece.colour == 0)
-								fieldRow += "<h class='first' id='" + cellname + "name'>" + piece.name + "</h>"
-							else
-								fieldRow += "<h class='second' id='" + cellname + "name'>" + piece.name + "</h>"
-							fieldRow += "<h class='hidden' id='" + cellname + "colour'>" + piece.colour + "</h>"
-						}
-						fieldRow += "</td>"
+						fieldRow += "<div id='" + cellname + "background' class='piece-background'></div></td>"
 					}
 					fieldRow += "</tr>"
 
 					$(fieldRow).appendTo($("#field"))
 				}
+				placePieces(pieces)
+			}
+			function placePieces(pieces){
+				for(var i=0; i<pieces.length; i++){
+					if(pieces[i].location != "X0"){
+						pieceString = "<div id='" + pieces[i].location + "piece' class='game-piece'>"
+							if(pieces[i].colour == 0)
+								pieceString += "<h class='first' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
+							else
+								pieceString += "<h class='second' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
+						pieceString += "<h class='hidden' id='" + pieces[i].location + "colour'>" + pieces[i].colour + "</h></div>"
 
+						$(pieceString).appendTo($("#"+pieces[i].location))
+					}
+				}
 				selectionCheck()
 			}
-			function findPiece(pieces, location){
-				for(var i=0; i<pieces.length; i++){
-					if(pieces[i].location == location)
-						return pieces[i]
+			function animateDiff(oldPieces, newPieces, callback){
+				currentBoard = newPieces
+
+				if(oldPieces == newPieces)
+					return callback(newPieces)
+				testPiece(oldPieces, newPieces, 0, callback)
+			}
+			function testPiece(oldPieces, newPieces, i, callback){
+				console.log(newPieces[i])
+				if(i >= oldPieces.length)
+					callback(newPieces)
+				var pieceO = oldPieces[i]
+				var pieceN = newPieces[i]
+
+				var rowO = ((8-pieceO.location[1]) * 50 + 25) + "px"
+				var colO = (((columns.indexOf(pieceO.location[0])) * 50) + 25) + "px"
+				var rowN = ((8-pieceN.location[1]) * 50 + 25) + "px"
+				var colN = (((columns.indexOf(pieceN.location[0])) * 50) + 25) + "px"
+
+				if(pieceO.location != pieceN.location){
+					console.log(pieceN.location)
+					var diffPiece = $($("#" + pieceO.location + "piece")[0].outerHTML)
+					diffPiece[0].style.top = rowO
+					diffPiece[0].style.left= colO
+					diffPiece.appendTo($("#field"))
+					$("#" + pieceO.location + "piece")[0].outerHTML = ""
+
+					setTimeout(function(){
+						console.log(pieceN.location)
+						$("#" + pieceO.location + "piece")[0].style.top = rowN
+						$("#" + pieceO.location + "piece")[0].style.left= colN
+
+						setTimeout(function(){
+							console.log('moved')
+							return callback(newPieces)
+						},400)
+					},10)
 				}
-				return null
+				else{
+					return testPiece(oldPieces, newPieces, i + 1, callback)
+				}
 			}
 	body
 		#header

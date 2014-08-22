@@ -26,7 +26,7 @@ function selectionCheck(){
 	hideSubmitButton()
 
 	$(".tile").click(function(event){
-		var tile = "" + event.currentTarget.id
+		var tile = $(this)[0].id
 
 		if(moveFrom == ""){
 			select1(tile)
@@ -45,7 +45,7 @@ function selectionCheck(){
 		}
 		else if(moveTo == tile){
 			moveTo = ""
-			$('#'+tile).css('backgroundColor','rgb(150,150,255)')
+			$('#'+tile + 'background').css('backgroundColor','rgb(150,150,255)')
 		}
 		else if(moveTo != "" && moveOptions.indexOf(tile) != -1){
 			select1(moveFrom)
@@ -89,14 +89,14 @@ function selectionCheck(){
 		displayOptions()
 
 		moveFrom = tile
-		$('#' + tile).css('backgroundColor', 'rgb(255,100,100')
+		$('#' + tile + 'background').css('backgroundColor', 'rgb(255,100,100')
 	}
 	function select2(tile){
 		if(moveOptions.indexOf(tile) == -1)
 			return
 
 		moveTo = tile
-		$('#' + tile).css('backgroundColor', 'rgb(100,100,255)')
+		$('#' + tile + 'background').css('backgroundColor', 'rgb(100,100,255)')
 
 		$('#moveData').attr('value',(moveFrom + moveTo))
 	}
@@ -104,27 +104,13 @@ function selectionCheck(){
 		moveOptions = []
 		for(var i=0; i<columns.length; i++){
 			for(var j=0; j<rows.length; j++){
-				var tileId = "#" + columns[i] + rows[j]
-				if((i+j) % 2 == 0)
-					$(tileId).css('backgroundColor', 'black')
-				else
-					$(tileId).css('backgroundColor', 'white')
+				$("#" + columns[i] + rows[j] + "background").css('backgroundColor', 'transparent')
 			}
 		}
 	}
-	function resetBackground(id){
-		var colNum = columns.indexOf(id[0])
-		var rowNum = rows.indexOf(id[1])
-		var value = colNum + rowNum
-
-		if(value % 2 == 0)
-			$('#'+id).css('backgroundColor', 'black')
-		else
-			$('#'+id).css('backgroundColor', 'white')
-	}
 	function displayOptions(){
 		for(var i=0; i<moveOptions.length; i++){
-			$('#'+moveOptions[i]).css('backgroundColor','rgb(150,150,255)')
+			$('#'+moveOptions[i] + 'background').css('backgroundColor','rgb(150,150,255)')
 		}
 	}
 	function showSubmitButton(){

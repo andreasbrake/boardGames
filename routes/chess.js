@@ -53,33 +53,35 @@ exports.saveGame = function(gameId, moveFrom, moveTo, callback){
 
 	console.log(moveFrom, moveTo)
 	var movingPiece = null
+        var lostPiece = null
 	game.getGame(gameId,function(oldData){
 		var pieces = oldData.data
 
 		for(var i=0; i<pieces.length; i++){ // Goes through all the game pieces (at the last GET request)
 			var currTile = pieces[i].location
-			if(currTile == moveFrom) // Gets our desired piece from the list of game pieces based on its location.
-				movingPiece = pieces.splice(i,1)[0]
+			if(currTile == moveFrom){ // Gets our desired piece from the list of game pieces based on its location.
+			    pieces[i].location = moveTo
+                            movingPiece = pieces[i]
+                        }
+                        else if(currTile == moveTo){
+                            pieces[i].location = "X0"
+                            lostPiece = pieces[i]
+                        }
+                            
 		}
 		// MovingPiece will be null if the player has submitted a move of empty space (won't happen unless player is cheating)
 
 		if(movingPiece == null)
-			return callback(oldData) // Don't allow anything to be saved if there shouldn't be a piece moving
+			return callback(oldData) // Don't allow
+                    // anything to be saved if there shouldn't be a
+                    // piece moving
 
 		movingPiece.location = moveTo // Set pieces location to the desired move spot
-		for(var i=0; i<pieces.length; i++){
-			var currTile = pieces[i].location
-			if(currTile == moveTo){
-				if(pieces[i].name == "king"){
-					kingTake = true
-					kingColour = pieces[i].colour
-				}
-				pieces[i] = movingPiece // Replaces piece at move location with the moving piece
-				movingPiece = null
-			}
-		}
-		if(movingPiece != null)
-			pieces.push(movingPiece)
+                
+                if(lostPiece != null && lostPiece.name == "king"){
+                    kingTake = true
+                    kingColour = lostPiece.colour
+                }
 
 		game.saveGame(gameId, pieces, 'chess', kingTake, !kingColour, function(udpatedGame){
 			return callback(udpatedGame)
