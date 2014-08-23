@@ -1,5 +1,27 @@
+#turn-piece{
+	position: absolute;
+
+	top: 25px;
+	left: -50px;
+
+	width: 30px;
+	height: 30px;
+
+	border-radius: 15px;
+
+	background-color: red;
+
+	-webkit-transition: background-color 0.7s;
+	   -moz-transition: background-color 0.7s;
+	    -ms-transition: background-color 0.7s;
+	     -o-transition: background-color 0.7s;
+	        transition: background-color 0.7s;
+}
+#title{
+	left: 75px !important;
+}
 #field{
-	position: relative;
+	position: absolute;
 
 	left: 50%;
 	margin-left: -235px;
@@ -7,6 +29,24 @@
 	border-right: 1px solid;
 	border-bottom: 1px solid;
 	border-collapse: collapse;
+}
+#lost-red{
+	position: relative;
+
+	width:200px;
+	height:200px;
+
+	margin-left: 100px;
+	float:left;
+}
+#lost-blue{
+	position: relative;
+	
+	width:200px;
+	height:200px;
+
+	margin-right: 100px;
+	float:right;
 }
 .tile{
 	width: 50px;

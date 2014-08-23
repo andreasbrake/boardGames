@@ -39,14 +39,19 @@ html(lang='en')
 
 						generateField(data.pieces)
 
-						if(data.turn == playerColour && data.victor == -1)
-							$("#title")[0].innerHTML = "Chess! It is your turn"
-						else if(data.victor == -1)
-							$("#title")[0].innerHTML = "Chess! It is " + $('#opponentData')[0].value + "'s turn"
-						else if(data.victor == playerColour)
-							$("#title")[0].innerHTML = "Chess! You have won!!"
+						if(data.turn == 0)
+							$("#turn-piece").css("background-color", "red")
 						else
-							$("#title")[0].innerHTML = "Chess! " + $('#opponentData')[0].value + " has won!!"
+							$("#turn-piece").css("background-color", "blue")
+
+						if(data.turn == playerColour && data.victor == -1)
+							$("#title-text")[0].innerHTML = "Chess! It is your turn</h1>"
+						else if(data.victor == -1)
+							$("#title-text")[0].innerHTML = "Chess! It is " + $('#opponentData')[0].value + "'s turn"
+						else if(data.victor == playerColour)
+							$("#title-text")[0].innerHTML = "Chess! You have won!!"
+						else
+							$("#title-text")[0].innerHTML = "Chess! " + $('#opponentData')[0].value + " has won!!"
 					})					
 				})
 			})
@@ -60,6 +65,12 @@ html(lang='en')
 				var playField = document.getElementById("field");
 				while (playField.firstChild) {
 					playField.removeChild(playField.firstChild);
+				}
+				while ($("#lost-blue")[0].firstChild) {
+					$("#lost-blue")[0].removeChild($("#lost-blue")[0].firstChild);
+				}
+				while ($("#lost-red")[0].firstChild) {
+					$("#lost-red")[0].removeChild($("#lost-red")[0].firstChild);
 				}
 
 				var topRowInner = ""
@@ -101,22 +112,82 @@ html(lang='en')
 
 					$(fieldRow).appendTo($("#field"))
 				}
-				placePieces(pieces)
+				
+				placePieces(pieces)				
 			}
 			function placePieces(pieces){
+				var lostCountBlue = 0
+				var lostCountRed = 0
+
 				for(var i=0; i<pieces.length; i++){
+
 					if(pieces[i].location != "X0"){
 						pieceString = "<div id='" + pieces[i].location + "piece' class='game-piece'>"
-							if(pieces[i].colour == 0)
-								pieceString += "<h class='first' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
-							else
-								pieceString += "<h class='second' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
+
+						if(pieces[i].colour == 0)
+							pieceString += "<h class='first' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
+						else
+							pieceString += "<h class='second' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
+
 						pieceString += "<h class='hidden' id='" + pieces[i].location + "colour'>" + pieces[i].colour + "</h></div>"
 
 						$(pieceString).appendTo($("#"+pieces[i].location))
 					}
+					else{
+						if(pieces[i].colour == 0){
+							var pieceString = ""
+							lostCountRed++
+
+							if(lostCountRed % 4 == 1)
+								pieceString += "<tr>"
+							pieceString += "<td><div class='lost-piece'><h class='first'>" + pieces[i].name + "</h></div></td>"
+							if(lostCountRed % 4 == 4)
+								pieceSting += "</tr>"
+
+							if($("#lost-red")[0].innerHTML == "")
+								$("<tbody></tbody>").appendTo($("#lost-red"))
+
+							if(lostCountRed % 4 == 1)
+								$("#lost-red")[0].children[0].innerHTML += pieceString
+							else
+								$("#lost-red")[0].children[0].children[Math.floor(lostCountRed/4)].innerHTML += pieceString
+						}
+						else{
+							var pieceString = ""
+							lostCountBlue++
+
+							console.log(lostCountBlue)
+
+							if(lostCountBlue % 4 == 1)
+								pieceString += "<tr>"
+							pieceString += "<td><div class='lost-piece'><h class='second'>" + pieces[i].name + "</h></div></td>"
+							if(lostCountBlue % 4 == 4)
+								pieceSting += "</tr>"
+
+							if($("#lost-blue")[0].innerHTML == "")
+								$("<tbody></tbody>").appendTo($("#lost-blue"))
+
+							if(lostCountBlue % 4 == 1)
+								$("#lost-blue")[0].children[0].innerHTML += pieceString
+							else
+								$("#lost-blue")[0].children[0].children[Math.floor(lostCountBlue/4)].innerHTML += pieceString
+						}
+					}
 				}
+
+				completeTable("#lost-red")
+				completeTable("#lost-blue")
 				selectionCheck()
+			}
+			function completeTable(table){
+				if($(table)[0].childNodes.length < 1)
+					$(table)[0].innerHTML = "<tbody></tbody>"
+
+				var rows = $(table)[0].children[0].childNodes.length
+				if(rows < 4){
+					$("<tr></tr>").appendTo($(table)[0].children[0])
+					completeTable(table)
+				}
 			}
 			function animateDiff(oldPieces, newPieces, callback){
 				currentBoard = newPieces
@@ -144,6 +215,12 @@ html(lang='en')
 					var colN = (((7-columns.indexOf(pieceN.location[0])) * 50) + 25) + "px"
 				}
 				if(pieceO.location != pieceN.location){
+					console.log(pieceO)
+					console.log(pieceN)
+					
+					if(pieceN.location == "X0")
+						callback()
+
 					var diffPiece = $($("#" + pieceO.location + "piece")[0].outerHTML)
 					diffPiece[0].style.top = rowO
 					diffPiece[0].style.left= colO
@@ -167,21 +244,20 @@ html(lang='en')
 		#header
 			a.nav-button(href='/') home
 			a.nav-button(href='/logout') logout
-			h#username= gameId
-			- if(victor != 'none')
-				h1#title= "Chess! " + victor + " HAS WON!"
-			- else if(hasTurn == 'true')
-				h1#title= "Chess! It is your turn"
-			- else
-				h1#title= "Chess! " + " It is " + opponent + "'s turn"
+			h.hidden#username= gameId
+			div#title
+				div#turn-piece
+				h1#title-text= ""
 			
 		#background
 		#main
-			input#playerColour(style='position:fixed; top: 100px; left: 10px' type='text' value= playerColour disabled)
+			input.hidden#playerColour(style='position:fixed; top: 100px; left: 10px' type='text' value= playerColour disabled)
 			input.hidden#hasTurn(type='text' value="" disabled)
 			input.hidden#moveData(form='moveForm' type='text' name='movement' value='hi')
 			input.hidden#opponentData(value= opponent)
 
 			div#submitButton= "submit"
 
+			table#lost-red
 			table#field
+			table#lost-blue

@@ -2,7 +2,7 @@ exports.chess = function(){
 	/*	piece = {
 			name: "",
 			colour: 0,
-			location: ""
+			location: "",
 		}
 	*/
 	var pieces = []
