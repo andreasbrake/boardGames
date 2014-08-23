@@ -150,7 +150,7 @@ html(lang='en')
 							if(lostCountRed % 4 == 1)
 								$("#lost-red")[0].children[0].innerHTML += pieceString
 							else
-								$("#lost-red")[0].children[0].children[Math.floor(lostCountRed/4)].innerHTML += pieceString
+								$("#lost-red")[0].children[0].children[Math.floor((lostCountRed-1)/4)].innerHTML += pieceString
 						}
 						else{
 							var pieceString = ""
@@ -170,7 +170,7 @@ html(lang='en')
 							if(lostCountBlue % 4 == 1)
 								$("#lost-blue")[0].children[0].innerHTML += pieceString
 							else
-								$("#lost-blue")[0].children[0].children[Math.floor(lostCountBlue/4)].innerHTML += pieceString
+								$("#lost-blue")[0].children[0].children[Math.floor((lostCountBlue-1)/4)].innerHTML += pieceString
 						}
 					}
 				}
