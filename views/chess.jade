@@ -219,22 +219,23 @@ html(lang='en')
 					console.log(pieceN)
 					
 					if(pieceN.location == "X0")
-						callback()
-
-					var diffPiece = $($("#" + pieceO.location + "piece")[0].outerHTML)
-					diffPiece[0].style.top = rowO
-					diffPiece[0].style.left= colO
-					diffPiece.appendTo($("#field"))
-					$("#" + pieceO.location + "piece")[0].outerHTML = ""
-
-					setTimeout(function(){
-						$("#" + pieceO.location + "piece")[0].style.top = rowN
-						$("#" + pieceO.location + "piece")[0].style.left= colN
+						testPiece(oldPieces, newPieces, i + 1, callback)
+					else{
+						var diffPiece = $($("#" + pieceO.location + "piece")[0].outerHTML)
+						diffPiece[0].style.top = rowO
+						diffPiece[0].style.left= colO
+						diffPiece.appendTo($("#field"))
+						$("#" + pieceO.location + "piece")[0].outerHTML = ""
 
 						setTimeout(function(){
-							return callback()
-						},700)
-					},10)
+							$("#" + pieceO.location + "piece")[0].style.top = rowN
+							$("#" + pieceO.location + "piece")[0].style.left= colN
+
+							setTimeout(function(){
+								return callback()
+							},700)
+						},10)
+					}
 				}
 				else{
 					return testPiece(oldPieces, newPieces, i + 1, callback)
