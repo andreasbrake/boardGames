@@ -4,6 +4,7 @@ html(lang='en')
 		meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1")
 		title Chess: Bored Games
 		link(rel='stylesheet' href='css/chess.css')
+		link(rel='stylesheet' href='css/chessPieces.css')
 		link(rel='stylesheet' href='css/style.css')
 		script(type='text/javascript' src="/js/socket.io.js")
 		script(type='text/javascript' src="/js/chessPieceMoves.js")
@@ -124,11 +125,16 @@ html(lang='en')
 					if(pieces[i].location != "X0"){
 						pieceString = "<div id='" + pieces[i].location + "piece' class='game-piece'>"
 
-						if(pieces[i].colour == 0)
-							pieceString += "<h class='first' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
-						else
-							pieceString += "<h class='second' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h>"
+						if(pieces[i].colour == 0){
+							pieceString += "<h class='first hidden' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h><div class='piece-image "
+							pieceString += getPieceImage(pieces[i].name, 0)
+						}
+						else{
+							pieceString += "<h class='second hidden' id='" + pieces[i].location + "name'>" + pieces[i].name + "</h><div class='piece-image "
+							pieceString += getPieceImage(pieces[i].name, 1)
+						}
 
+						pieceString += "'></div>"
 						pieceString += "<h class='hidden' id='" + pieces[i].location + "colour'>" + pieces[i].colour + "</h></div>"
 
 						$(pieceString).appendTo($("#"+pieces[i].location))
@@ -140,7 +146,9 @@ html(lang='en')
 
 							if(lostCountRed % 4 == 1)
 								pieceString += "<tr>"
-							pieceString += "<td><div class='lost-piece'><h class='first'>" + pieces[i].name + "</h></div></td>"
+
+							pieceString += "<td><div class='lost-piece'><h class='first hidden'>" + pieces[i].name + "</h><div class='piece-image " + getPieceImage(pieces[i].name, 0) + "'></div></div></td>"
+
 							if(lostCountRed % 4 == 4)
 								pieceSting += "</tr>"
 
@@ -160,7 +168,7 @@ html(lang='en')
 
 							if(lostCountBlue % 4 == 1)
 								pieceString += "<tr>"
-							pieceString += "<td><div class='lost-piece'><h class='second'>" + pieces[i].name + "</h></div></td>"
+							pieceString += "<td><div class='lost-piece'><h class='second hidden'>" + pieces[i].name + "</h><div class='piece-image " + getPieceImage(pieces[i].name, 1) + "'></div></div></td>"
 							if(lostCountBlue % 4 == 4)
 								pieceSting += "</tr>"
 
@@ -178,6 +186,40 @@ html(lang='en')
 				completeTable("#lost-red")
 				completeTable("#lost-blue")
 				selectionCheck()
+			}
+			function getPieceImage(piece, colour){
+				if(colour == 0){
+					switch(piece){
+						case "pawn":
+							return "pawn-white"
+						case "knight":
+							return "knight-white"
+						case "bishop":
+							return "hat-guy-white"
+						case "rook":
+							return "rook-white"
+						case "queen":
+							return "queen-white"
+						case "king":
+							return "king-white"
+					}
+				}
+				else{
+					switch(piece){
+						case "pawn":
+							return "pawn-black"
+						case "knight":
+							return "knight-black"
+						case "bishop":
+							return "hat-guy-black"
+						case "rook":
+							return "rook-black"
+						case "queen":
+							return "queen-black"
+						case "king":
+							return "king-black"
+					}
+				}
 			}
 			function completeTable(table){
 				if($(table)[0].childNodes.length < 1)

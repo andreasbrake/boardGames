@@ -1,0 +1,44 @@
+.piece-image{
+	position: absolute;
+
+	width: 50px;
+	height: 50px;
+
+	background-image: url("/img/chessPieces.png");
+}
+.pawn-white{
+	background-position: 200px 0px;
+}
+.pawn-black{
+	background-position: 200px 50px;
+}
+.knight-white{
+	background-position: 150px 0px;
+}
+.knight-black{
+	background-position: 150px 50px;
+}
+.hat-guy-white{
+	background-position: 100px 0px;
+}
+.hat-guy-black{
+	background-position: 100px 50px;
+}
+.rook-white{
+	background-position: 50px 0px;
+}
+.rook-black{
+	background-position: 50px 50px;
+}
+.queen-white{
+	background-position: 250px 0px;
+}
+.queen-black{
+	background-position: 250px 50px;
+}
+.king-white{
+	background-position: 300px 0px;
+}
+.king-black{
+	background-position: 300px 50px;
+}
